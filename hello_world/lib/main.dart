@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 void main() => runApp(MyApp());
 
@@ -18,9 +19,9 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.red,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'My very first App'),
     );
   }
 }
@@ -45,6 +46,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  Color _c = Colors.white;
+  String _n = "White";
 
   void _incrementCounter() {
     setState(() {
@@ -53,7 +56,21 @@ class _MyHomePageState extends State<MyHomePage> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      _counter += 1;
+      _counter++;
+      _c = Colors.green;
+      _n = "Green";
+    });
+  }
+
+  void printColor() {
+    print("$_n [${_c.red}, ${_c.green}, ${_c.blue}]");
+  }
+
+  void _decrementCounter() {
+    setState(() {
+      _counter--;
+      _c = Colors.red;
+      _n = "Red";
     });
   }
 
@@ -101,11 +118,26 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      floatingActionButton: SpeedDial(
+        onClose: printColor,
+        animatedIcon: AnimatedIcons.menu_close,
+        backgroundColor: Colors.blue,
+        tooltip: 'Speed Dial',
+        children: [
+          SpeedDialChild(
+            child: Icon(Icons.add),
+            backgroundColor: Colors.green,
+            label: 'Add 1',
+            onTap: _incrementCounter,
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.remove),
+            backgroundColor: Colors.red,
+            label: 'Take 1',
+            onTap: _decrementCounter,
+          ),
+        ],
+      ),
     );
   }
 }
