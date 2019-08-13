@@ -32,20 +32,28 @@ class Question {
     return _op;
   }
 
-  List<num> getWrongAnswers({int amount = 4, int delta = 20}) {
+  Set<num> getWrongAnswers({int amount = 4, int delta = 20}) {
     assert(amount > 0, "amount > 0 to generate wrong answers");
 
     // +1 for the correct answer to be added by the end
-    List<num> result = List<num>(amount + 1);
+    Set<num> resultSet = Set<num>();
 
-    for (int i = 0; i < amount; i++) {
-      result[i] = randInt(this._answer - delta, this._answer + delta);
+    while (resultSet.length < amount + 1) {
+      int tmp = randInt(this._answer - delta, this._answer + delta);
+
+      // Only add unique values, so one that equals the answer is not valid
+      if (tmp == this._answer) continue;
+
+      resultSet.add(tmp);
     }
 
-    result[amount] = _answer;
-    result.shuffle();
+    resultSet.add(this._answer);
 
-    return result;
+    // Shuffle set
+    List<num> tmpList = resultSet.toList();
+    tmpList.shuffle();
+
+    return tmpList.toSet();
   }
 
   num operate() => OperationUtils.operate(_op, num1, num2);
