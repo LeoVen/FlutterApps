@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class QuestionCounter extends StatelessWidget {
-  int rightQuestions;
-  int wrongQuestions;
+  final int rightQuestions;
+  final int wrongQuestions;
 
   QuestionCounter({this.rightQuestions, this.wrongQuestions, Key key})
       : super(key: key);

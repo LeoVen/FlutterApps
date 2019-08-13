@@ -1,7 +1,7 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:math_genius/models/save_data.dart';
+import 'package:math_genius/util/save_file_handler.dart';
 
 import './difficulty_menu.dart';
 import './question_counter.dart';
@@ -15,8 +15,6 @@ class AppHome extends StatefulWidget {
 }
 
 class _AppHomeState extends State<AppHome> {
-  static final _rand = Random();
-
   final List<int> _min = [
     0,
     -10,
@@ -48,47 +46,13 @@ class _AppHomeState extends State<AppHome> {
   int ansWrong = 0;
   int gameDif = 0; // game difficulty
   int sliderValue = 0;
+  int score = 0;
   Question question;
 
   @override
   Widget build(BuildContext context) {
     question = Question(OperationUtils.random(), randIntDif(), randIntDif());
-    Set<num> numList = question.getWrongAnswers();
-
-    List<Widget> answerButtons = [];
-
-    // Add initial texts
-    answerButtons.addAll(<Widget>[
-      Container(
-        child: Text(
-          'Can you guess the result?',
-          style: TextStyle(
-            fontSize: 24,
-          ),
-        ),
-        margin: const EdgeInsets.only(top: 20.0, bottom: 10.0),
-      ),
-      Container(
-        child: Text(
-          '${question.num1} ${OperationUtils.operationChar(question.getOp())} ${question.num2} = ?',
-          style: TextStyle(
-            fontSize: 30,
-          ),
-        ),
-        margin: const EdgeInsets.only(top: 10.0, bottom: 20.0),
-      ),
-    ]);
-
-    // Add option buttons
-    numList.forEach((ans) => answerButtons.add(
-          RaisedButton(
-            key: Key("$ans"), // Provided that getWrongAnswers() returns a Set<num>
-            child: Text('$ans'),
-            textColor: Colors.white,
-            color: Colors.black,
-            onPressed: () => validate(ans),
-          ),
-        ));
+    final Set<num> numList = question.getWrongAnswers();
 
     return Scaffold(
       appBar: AppBar(
@@ -98,30 +62,100 @@ class _AppHomeState extends State<AppHome> {
       backgroundColor: Colors.white,
       body: Center(
         child: Column(
-          children: answerButtons +
-              <Widget>[
-                Container(
-                  child: Center(
-                    child: Column(
-                      children: <Widget>[
-                        RaisedButton(
-                          child: Text('Another One'),
-                          onPressed: reload,
-                        ),
-                      ],
+          children: <Widget>[
+            Container(
+              child: Text(
+                'Can you guess the result?',
+                style: TextStyle(
+                  fontSize: 24,
+                ),
+              ),
+              margin: const EdgeInsets.only(top: 20.0, bottom: 10.0),
+            ),
+            Container(
+              child: Text(
+                '${question.num1} ${OperationUtils.operationChar(question.getOp())} ${question.num2} = ?',
+                style: TextStyle(
+                  fontSize: 30,
+                ),
+              ),
+              margin: const EdgeInsets.only(top: 10.0, bottom: 20.0),
+            ),
+            ...numList
+                .map((ans) => RaisedButton(
+                      key: Key(
+                          "$ans"), // Provided that getWrongAnswers() returns a Set<num>
+                      child: Text('$ans'),
+                      textColor: Colors.white,
+                      color: Colors.black,
+                      onPressed: () => validate(ans),
+                    ))
+                .toList(),
+            Container(
+              child: Center(
+                child: Column(
+                  children: <Widget>[
+                    RaisedButton(
+                      child: Text('Another One'),
+                      onPressed: reload,
                     ),
-                  ),
-                  margin: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+                  ],
                 ),
-                QuestionCounter(
-                  rightQuestions: ansRight,
-                  wrongQuestions: ansWrong,
-                ),
-                DifficultyMenu(sliderOnChange, sliderValue),
-              ],
+              ),
+              margin: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+            ),
+            QuestionCounter(
+              rightQuestions: ansRight,
+              wrongQuestions: ansWrong,
+            ),
+            DifficultyMenu(sliderOnChange, sliderValue),
+            Container(
+              margin: const EdgeInsets.only(top: 10.0),
+              child: Text("Score: $score"),
+            ),
+          ],
+        ),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: <Widget>[
+            DrawerHeader(
+              child: Text(
+                "Menu",
+                style: TextStyle(color: Colors.white),
+              ),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.file_upload),
+              onTap: saveProgress,
+              title: Text("Save Progress"),
+            ),
+            ListTile(
+              leading: Icon(Icons.file_download),
+              onTap: loadProgress,
+              title: Text("Load Progress"),
+            ),
+          ],
+          padding: EdgeInsets.zero,
         ),
       ),
     );
+  }
+
+  void loadProgress() {
+    // @todo load progress from a file
+    SaveFileHandler.load().then((save) {
+      // @todo close drawer
+      setState(() {
+        score = save.score;
+        ansRight = save.answersRight;
+        ansWrong = save.answersWrong;
+        gameDif = 0;
+      });
+    });
   }
 
   // Generate an integer based on current game difficulty
@@ -132,6 +166,16 @@ class _AppHomeState extends State<AppHome> {
       ansRight = ansRight;
       ansWrong = ansWrong;
       gameDif = gameDif;
+    });
+  }
+
+  void saveProgress() {
+    SaveFileHandler.save(SaveData(
+      answersRight: ansRight,
+      answersWrong: ansWrong,
+      score: score,
+    )).then((_) {
+      // @todo close drawer and add popup for save success
     });
   }
 
@@ -150,13 +194,17 @@ class _AppHomeState extends State<AppHome> {
   }
 
   void validate(int value) {
+    int scoreDelta = gameDif + 1;
+
     if (value == question.getAnswer()) {
       setState(() {
         ansRight = ansRight + 1;
+        score = score + scoreDelta;
       });
     } else {
       setState(() {
         ansWrong = ansWrong + 1;
+        score = score > scoreDelta ? score - scoreDelta : 0;
       });
     }
   }
