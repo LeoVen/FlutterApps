@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:global_wars/components/units_carousel.dart/units_carousel.dart';
 import 'package:global_wars/components/units_grid/units_grid.dart';
 
 class AppHome extends StatefulWidget {
@@ -16,7 +17,7 @@ class _AppHomeState extends State<AppHome> {
         title: Text("Global Wars"),
         centerTitle: true,
       ),
-      body: UnitsGrid(),
+      body: UnitsCarousel(),
     );
   }
 }

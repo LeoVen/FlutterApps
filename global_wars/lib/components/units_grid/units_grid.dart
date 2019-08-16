@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:global_wars/models/battle_unit.dart';
+import 'package:global_wars/models/play_card/play_card_data.dart';
 
 import 'units_grid_tile.dart';
 
@@ -15,7 +15,7 @@ class UnitsGrid extends StatelessWidget {
         ),
         scrollDirection: Axis.vertical,
         shrinkWrap: true,
-        children: List.generate(battleUnits.length, (index) {
+        children: List.generate(playCardData.length, (index) {
           return UnitsGridTile(id: index);
         }),
       ),

@@ -1,27 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:global_wars/models/battle_unit.dart';
+import 'package:global_wars/models/play_card/play_card_data.dart';
 
 class UnitCardDescription extends StatelessWidget {
   final int id;
+  final double margin;
 
-  UnitCardDescription({this.id});
+  UnitCardDescription(this.id, {this.margin = 10.0});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          minHeight: 100,
-        ),
-        child: Container(
-          margin: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 10.0),
-          child: Text(
-            "${battleUnits[id].description}",
-            textAlign: TextAlign.justify,
-            style: TextStyle(
-              color: Colors.grey[600],
-            ),
-          ),
+      margin: EdgeInsets.all(margin),
+      child: Text(
+        "      ${playCardData[id].description.replaceAll(RegExp('\n'), '\n      ')}",
+        textAlign: TextAlign.justify,
+        style: TextStyle(
+          color: Colors.grey[600],
         ),
       ),
     );

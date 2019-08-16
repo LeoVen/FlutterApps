@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:global_wars/components/unit_page.dart';
-import 'package:global_wars/models/battle_unit.dart';
+import 'package:global_wars/models/play_card/play_card_data.dart';
 
 class UnitsGridTile extends StatelessWidget {
   final int id;
@@ -20,7 +20,7 @@ class UnitsGridTile extends StatelessWidget {
             shape: BoxShape.rectangle,
             image: DecorationImage(
               image:
-                  AssetImage('assets/images/${battleUnits[id].fileName}.jpg'),
+                  AssetImage('assets/images/${playCardData[id].imageFileName}.jpg'),
               fit: BoxFit.cover,
             ),
             border: Border.all(
