@@ -10,16 +10,25 @@ class UnitCardImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 200.0,
       child: Stack(
-          children: <Widget>[
-            Image.asset("assets/images/${playCardData[id].imageFileName}.jpg"),
-            Positioned(
-              left: 0.0,
-              bottom: 0.0,
-              child: UnitCardTitle(id: id),
+        children: <Widget>[
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: AssetImage(
+                    "assets/images/${playCardData[id].imageFileName}.jpg"),
+              ),
             ),
-          ],
-        ),
+          ),
+          Positioned(
+            left: 0.0,
+            bottom: 0.0,
+            child: UnitCardTitle(id: id),
+          ),
+        ],
+      ),
     );
   }
 }
