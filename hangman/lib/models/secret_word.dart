@@ -5,7 +5,7 @@ class SecretWord {
 
   SecretWord(String word, this.hint) {
     this.word = word.toUpperCase();
-    discovered = List.generate(word.length, (index) => false);
+    discovered = List.generate(word.length, (index) => word[index] == " " ? true : false);
   }
 
   SecretWord.newFrom(this.word, this.hint, this.discovered);

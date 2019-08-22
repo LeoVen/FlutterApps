@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hangman/components/hangman/hangman_dialog.dart';
 import 'package:hangman/components/hangman/hangman_image.dart';
 import 'package:hangman/components/how_to_play/how_to_play.dart';
 import 'package:hangman/components/letter_picker/letter_picker.dart';
@@ -33,6 +34,11 @@ class _HangmanState extends State<Hangman> {
     secretWord = randomWord();
     letterPickerStates = List.generate(LetterIndex.indexToLetter.length,
         (_) => LetterPickerBoxState.notPicked);
+  }
+
+  @override
+  void didUpdateWidget(Hangman oldWidget) {
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -114,6 +120,8 @@ class _HangmanState extends State<Hangman> {
       letterPickerStates = List.generate(LetterIndex.indexToLetter.length,
           (_) => LetterPickerBoxState.notPicked);
       hangmanStage = 0;
+      playerWin = false;
+      playerLoose = false;
     });
   }
 
@@ -128,8 +136,10 @@ class _HangmanState extends State<Hangman> {
     // Receives a LetterPickerBox that was tapped by the user
     String currentWord = secretWord.word;
     bool found = false;
+    bool loose = false;
+    bool win = false;
 
-    if (currentWord == "") return;
+    if (currentWord == "" || playerWin || playerLoose) return;
 
     List<LetterPickerBoxState> newLetterPickerStates =
         List.from(letterPickerStates);
@@ -151,15 +161,40 @@ class _HangmanState extends State<Hangman> {
       newLetterPickerStates[LetterIndex.letterToIndex[letter]] =
           LetterPickerBoxState.letterNotFound;
 
+    // Update discovered letters
+    List<bool> newDiscoveredLetters =
+        List.generate(indexesFound.length, (index) {
+      return secretWord.discovered[index] || indexesFound[index];
+    });
+
+    if (hangmanStage == 6 && !found) {
+      loose = true;
+    } else if (newDiscoveredLetters.fold(true, (a, b) => a && b)) {
+      win = true;
+    }
+
+    if (win || loose) {
+      _showEndDialog(win);
+    }
+
     setState(() {
       secretWord = SecretWord.newFrom(
-          secretWord.word,
-          secretWord.hint,
-          List.generate(indexesFound.length, (index) {
-            return secretWord.discovered[index] || indexesFound[index];
-          }));
+        secretWord.word,
+        secretWord.hint,
+        newDiscoveredLetters,
+      );
       letterPickerStates = newLetterPickerStates;
       hangmanStage = hangmanStage + (found ? 0 : 1);
+      playerLoose = loose;
+      playerWin = win;
     });
+  }
+
+  void _showEndDialog(bool won) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return HangmanDialog(won, _newRandomWord);
+        });
   }
 }
