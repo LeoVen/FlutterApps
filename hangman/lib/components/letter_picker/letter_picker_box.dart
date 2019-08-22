@@ -23,7 +23,8 @@ class LetterPickerBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        validationCallback(letter);
+        if (pickerState == LetterPickerBoxState.notPicked)
+          validationCallback(letter);
       },
       child: Container(
         margin: const EdgeInsets.all(2.0),
