@@ -9,18 +9,22 @@ class UnitCardAbilities extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Row(
+      margin: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 5.0),
+      child: Column(
         children: <Widget>[
-          ConstrainedBox(
-            constraints: BoxConstraints(
-              minWidth: 60.0,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text("Ability 1"),
-              ],
-            ),
+          Row(
+            children: <Widget>[
+              Icon(Icons.ac_unit),
+              SizedBox(width: 10.0),
+              Text("Ability 1"),
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Icon(Icons.visibility),
+              SizedBox(width: 10.0),
+              Text("Ability 2"),
+            ],
           ),
         ],
       ),
